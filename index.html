@@ -26,7 +26,7 @@
         var BUFF_SIZE = 16384;
         var audioContext;
         var lastDataReceivedTime = Date.now();
-        const slackWebhookUrl = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
+        const slackWebhookUrl = VAR;
 
 
         var notificationTimeout;
@@ -105,7 +105,7 @@
 
         function showNotification() {
             document.getElementById("notification").style.display = "block";
-            sendSlackNotification("No recibí audio en los ultimos 30 segundos.");
+            sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
         }
 
         async function sendSlackNotification(message) {
@@ -113,7 +113,7 @@
                 const response = await fetch(slackWebhookUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: JSON.stringify({ text: message }),
                 });
