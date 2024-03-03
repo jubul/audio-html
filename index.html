@@ -48,25 +48,29 @@
         }
 
         function processMicrophoneBuffer(event) {
-            const microphoneOutputBuffer = event.data;
-            let sum = 0;
+            try {
+                const microphoneOutputBuffer = event.data[0];
+                let sum = 0;
 
-            for (let i = 0; i < BUFF_SIZE; i++) {
-                sum += Math.abs(microphoneOutputBuffer[i]);
+                for (let i = 0; i < BUFF_SIZE; i++) {
+                    sum += Math.abs(microphoneOutputBuffer[i]);
+                }
+
+                const average = sum / BUFF_SIZE;
+                document.getElementById("barra-progreso").style.width = Math.floor(average * 100) + "%";
+
+                if (ventanas.length >= MAX_VENTANAS) {
+                    ventanas.shift();
+                }
+
+                ventanas.push(average);
+
+                const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
+                console.log(sumVentanas);
+                document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
+            } catch (error) {
+                showError('Error processing microphone buffer.');
             }
-
-            const average = sum / BUFF_SIZE;
-            document.getElementById("barra-progreso").style.width = Math.floor(average * 100) + "%";
-
-            if (ventanas.length >= MAX_VENTANAS) {
-                ventanas.shift();
-            }
-
-            ventanas.push(average);
-
-            const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
-            console.log(sumVentanas);
-            document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
         }
     </script>
 </body>
