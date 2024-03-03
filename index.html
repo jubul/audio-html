@@ -55,19 +55,21 @@
 
         const microphoneOutputBuffer = event.data[0];
         let sum = 0;
+        let validSamplesCount = 0; // Counter to track the number of valid samples
 
         for (let i = 0; i < BUFF_SIZE; i++) {
-            if (isNaN(microphoneOutputBuffer[i])) {
-                throw new Error('NaN value detected in microphone buffer data.');
+            if (!isNaN(microphoneOutputBuffer[i])) {
+                sum += Math.abs(microphoneOutputBuffer[i]);
+                validSamplesCount++;
             }
-            sum += Math.abs(microphoneOutputBuffer[i]);
         }
 
-        const average = sum / BUFF_SIZE;
-        if (isNaN(average)) {
-            throw new Error('NaN value encountered during average calculation.');
+        // Ensure that there are valid samples to calculate the average
+        if (validSamplesCount === 0) {
+            throw new Error('No valid samples found in microphone buffer data.');
         }
 
+        const average = sum / validSamplesCount; // Calculate average using valid samples
         document.getElementById("barra-progreso").style.width = Math.floor(average * 100) + "%";
 
         if (ventanas.length >= MAX_VENTANAS) {
@@ -77,16 +79,13 @@
         ventanas.push(average);
 
         const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
-        if (isNaN(sumVentanas)) {
-            throw new Error('NaN value encountered during sumVentanas calculation.');
-        }
-
         console.log(sumVentanas);
         document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
     } catch (error) {
         showError(error.message);
     }
 }
+
   </script>  
 </body>
 </html>
