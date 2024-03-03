@@ -1,128 +1,77 @@
 <html>
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-  </head>
+</head>
 
 <body style="overflow: hidden;">
-  <title>capture microphone audio into buffer</title>
+    <title>capture microphone audio into buffer</title>
 
-<div style="background-color: lightgray; min-height: 30px; padding: 0;">
-  <div id="barra-progreso" style="background-color: blue; width: 30%; margin: 0; padding: 0;">&nbsp</div>
+    <div style="background-color: lightgray; min-height: 30px; padding: 0;">
+        <div id="barra-progreso" style="background-color: blue; width: 30%; margin: 0; padding: 0;">&nbsp;</div>
+    </div>
 
-</div>
+    <div style="background-color: lightgray; min-height: 30px; padding: 0;">
+        <div id="barra-progreso2" style="background-color: red; width: 30%; margin: 0; padding: 0;">&nbsp;</div>
+    </div>
 
-<div style="background-color: lightgray; min-height: 30px; padding: 0;">
-    <div id="barra-progreso2" style="background-color: red; width: 30%; margin: 0; padding: 0;">&nbsp</div>
-  
-  </div>
+    <div id="chart"></div>
 
-<div id="chart">
+    <script>
+        var ventanas = [];
+        var MAX_VENTANAS = 7;
+        var BUFF_SIZE = 16384;
 
+        var webaudio_tooling_obj = function () {
+            console.log("Starting up...");
+            var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-</div>
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('getUserMedia not supported in this browser.');
+                return;
+            }
 
+            async function startMicrophone() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const audioWorkletNode = new AudioWorkletNode(audioContext, 'microphone-processor');
+                    audioWorkletNode.port.onmessage = processMicrophoneBuffer;
 
+                    const microphoneStream = audioContext.createMediaStreamSource(stream);
+                    microphoneStream.connect(audioWorkletNode);
 
-<script>
-  var ventanas = [];
-  var MAX_VENTANAS = 7;
+                } catch (error) {
+                    showError('Error capturing audio.');
+                }
+            }
 
+            function showError(message) {
+                alert(message);
+            }
 
-  var webaudio_tooling_obj = function () {
-	console.log("arrancando");
-    var audioContext = new AudioContext();
+            function processMicrophoneBuffer(event) {
+                const microphoneOutputBuffer = event.data;
+                let sum = 0;
 
-    console.log("audio is starting up ...");
+                for (let i = 0; i < BUFF_SIZE; i++) {
+                    sum += Math.abs(microphoneOutputBuffer[i]);
+                }
 
-    var BUFF_SIZE = 16384;
+                const average = sum / BUFF_SIZE;
+                document.getElementById("barra-progreso").style.width = Math.floor(average * 100) + "%";
 
-    var audioInput = null,
-        microphone_stream = null,
-        gain_node = null,
-        script_processor_node = null,
-        script_processor_fft_node = null,
-        analyserNode = null;
+                if (ventanas.length >= MAX_VENTANAS) {
+                    ventanas.shift();
+                }
 
-    if (!navigator.getUserMedia)
-            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-                          navigator.mozGetUserMedia || navigator.msGetUserMedia;
+                ventanas.push(average);
 
-    if (navigator.getUserMedia){
+                const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
+                console.log(sumVentanas);
+                document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
+            }
 
-        navigator.getUserMedia({audio:true}, 
-          function(stream) {
-              start_microphone(stream);
-          },
-          function(e) {
-            alert('Error capturing audio.');
-          }
-        );
-
-    } else { alert('getUserMedia not supported in this browser.'); }
-
-    // ---
-
-    function show_some_data(given_typed_array, num_row_to_display, label) {
-
-        var size_buffer = given_typed_array.length;
-        var index = 0;
-        var max_index = num_row_to_display;
-
-        console.log("__________ " + label);
-
-        for (; index < max_index && index < size_buffer; index += 1) {
-
-            console.log(given_typed_array[index]);
-        }
-    }
-
-    function process_microphone_buffer(event) { // invoked by event loop
-
-        var i, N, inp, microphone_output_buffer;
-
-        microphone_output_buffer = event.inputBuffer.getChannelData(0); // just mono - 1 channel for now
-
-        // microphone_output_buffer  <-- this buffer contains current gulp of data size BUFF_SIZE
-
-        //show_some_data(microphone_output_buffer, 5, "from getChannelData");
-        var suma = 0;
-        for(var i=0; i<BUFF_SIZE; i++){
-          suma = suma + Math.abs(microphone_output_buffer[i]);
-        }
-        suma = suma / BUFF_SIZE;
-        document.getElementById("barra-progreso").style.width= Math.floor(suma*100)+"%";
-        if(ventanas.length>=MAX_VENTANAS){
-          ventanas.shift();
-        }
-        ventanas.push(suma);
-        //chart.render();
-
-        var sumaVentanas = 0;
-        for(var i=0; i<ventanas.length; i++){
-          sumaVentanas = sumaVentanas + ventanas[i];
-        }
-        sumaVentanas = sumaVentanas / (MAX_VENTANAS * BUFF_SIZE);
-        console.log(sumaVentanas)
-        document.getElementById("barra-progreso2").style.width= Math.floor(sumaVentanas*1000000)+"%";
-    }
-
-    function start_microphone(stream){
-
-      gain_node = audioContext.createGain();
-
-      microphone_stream = audioContext.createMediaStreamSource(stream);
-      microphone_stream.connect(gain_node); 
-
-      script_processor_node = audioContext.createScriptProcessor(BUFF_SIZE, 1, 1);
-      script_processor_node.onaudioprocess = process_microphone_buffer;
-
-      microphone_stream.connect(script_processor_node);      
-    }
-
-  }(); //  webaudio_tooling_obj = function()
-
-
-
-</script>
+            startMicrophone();
+        }(); //  webaudio_tooling_obj = function()
+    </script>
 </body>
 </html>
