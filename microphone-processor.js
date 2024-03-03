@@ -9,7 +9,7 @@ class MicrophoneProcessor extends AudioWorkletProcessor {
         }
 
         const microphoneOutputBuffer = input[0];
-        this.port.postMessage(microphoneOutputBuffer);
+        this.port.postMessage([microphoneOutputBuffer]); // Wrap the data in an array before sending
         return true;
     }
 }

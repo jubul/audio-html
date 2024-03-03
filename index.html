@@ -19,63 +19,63 @@
     <button onclick="startMicrophone()">Start Microphone</button>
 
     <script>
-        var ventanas = [];
-        var MAX_VENTANAS = 7;
-        var BUFF_SIZE = 16384;
-        var audioContext;
-
-        async function startMicrophone() {
-            try {
-                // Create audio context after a user gesture
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                await audioContext.audioWorklet.addModule('microphone-processor.js');
-
-                const audioWorkletNode = new AudioWorkletNode(audioContext, 'microphone-processor');
-                audioWorkletNode.port.onmessage = processMicrophoneBuffer;
-
-                const microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const microphoneSource = audioContext.createMediaStreamSource(microphoneStream);
-                microphoneSource.connect(audioWorkletNode);
-
-            } catch (error) {
-                showError('Error setting up audio worklet.');
-            }
-        }
-
-        function showError(message) {
-            alert(message);
-        }
-
-        function processMicrophoneBuffer(event) {
-    try {
-        if (!event || !event.data || !event.data[0]) {
-            throw new Error('Invalid microphone buffer data.');
-        }
-
-        const microphoneOutputBuffer = event.data[0];
-        let sum = 0;
-
-        for (let i = 0; i < BUFF_SIZE; i++) {
-            sum += Math.abs(microphoneOutputBuffer[i]);
-        }
-
-        const average = sum / BUFF_SIZE;
-        document.getElementById("barra-progreso").style.width = Math.floor(average * 100) + "%";
-
-        if (ventanas.length >= MAX_VENTANAS) {
-            ventanas.shift();
-        }
-
-        ventanas.push(average);
-
-        const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
-        console.log(sumVentanas);
-        document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
-    } catch (error) {
-        showError(error.message);
-    }
-}
-    </script>
+      var ventanas = [];
+      var MAX_VENTANAS = 7;
+      var BUFF_SIZE = 16384;
+      var audioContext;
+  
+      async function startMicrophone() {
+          try {
+              // Create audio context after a user gesture
+              audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              
+              await audioContext.audioWorklet.addModule('microphone-processor.js');
+  
+              const audioWorkletNode = new AudioWorkletNode(audioContext, 'microphone-processor');
+              audioWorkletNode.port.onmessage = processMicrophoneBuffer;
+  
+              const microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              const microphoneSource = audioContext.createMediaStreamSource(microphoneStream);
+              microphoneSource.connect(audioWorkletNode);
+  
+          } catch (error) {
+              showError('Error setting up audio worklet.');
+          }
+      }
+  
+      function showError(message) {
+          alert(message);
+      }
+  
+      function processMicrophoneBuffer(event) {
+          try {
+              if (!event || !event.data || !event.data[0]) {
+                  throw new Error('Invalid microphone buffer data.');
+              }
+  
+              const microphoneOutputBuffer = event.data[0];
+              let sum = 0;
+  
+              for (let i = 0; i < BUFF_SIZE; i++) {
+                  sum += Math.abs(microphoneOutputBuffer[i]);
+              }
+  
+              const average = sum / BUFF_SIZE;
+              document.getElementById("barra-progreso").style.width = Math.floor(average * 100) + "%";
+  
+              if (ventanas.length >= MAX_VENTANAS) {
+                  ventanas.shift();
+              }
+  
+              ventanas.push(average);
+  
+              const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
+              console.log(sumVentanas);
+              document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
+          } catch (error) {
+              showError(error.message);
+          }
+      }
+  </script>  
 </body>
 </html>
