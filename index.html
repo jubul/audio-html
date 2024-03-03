@@ -26,7 +26,7 @@
         var BUFF_SIZE = 16384;
         var audioContext;
         var lastDataReceivedTime = Date.now();
-        const SLACK_WEBHOOK_URL = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
+        const slackWebhookUrl = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
 
 
         var notificationTimeout;
@@ -110,7 +110,7 @@
 
         async function sendSlackNotification(message) {
             try {
-                const response = await fetch(SLACK_WEBHOOK_URL, {
+                const response = await fetch(slackWebhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
