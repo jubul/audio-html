@@ -21,27 +21,22 @@
         var MAX_VENTANAS = 7;
         var BUFF_SIZE = 16384;
 
-        var webaudio_tooling_obj = function () {
+        var webaudio_tooling_obj = async function () {
             console.log("Starting up...");
             var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            try {
+                await audioContext.audioWorklet.addModule('microphone-processor.js');
 
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('getUserMedia not supported in this browser.');
-                return;
-            }
+                const audioWorkletNode = new AudioWorkletNode(audioContext, 'microphone-processor');
+                audioWorkletNode.port.onmessage = processMicrophoneBuffer;
 
-            async function startMicrophone() {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    const audioWorkletNode = new AudioWorkletNode(audioContext, 'microphone-processor');
-                    audioWorkletNode.port.onmessage = processMicrophoneBuffer;
+                const microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const microphoneSource = audioContext.createMediaStreamSource(microphoneStream);
+                microphoneSource.connect(audioWorkletNode);
 
-                    const microphoneStream = audioContext.createMediaStreamSource(stream);
-                    microphoneStream.connect(audioWorkletNode);
-
-                } catch (error) {
-                    showError('Error capturing audio.');
-                }
+            } catch (error) {
+                showError('Error setting up audio worklet.');
             }
 
             function showError(message) {
@@ -69,8 +64,6 @@
                 console.log(sumVentanas);
                 document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
             }
-
-            startMicrophone();
         }(); //  webaudio_tooling_obj = function()
     </script>
 </body>
