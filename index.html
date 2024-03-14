@@ -26,7 +26,7 @@
         var BUFF_SIZE = 16384;
         var audioContext;
         var lastDataReceivedTime = Date.now();
-        const slackWebhookUrl = VAR;
+        const slackWebhookUrl = VAR; //replacethis
 
 
         var notificationTimeout;
@@ -94,9 +94,13 @@
 
                 // Clear previous timeout
                 clearTimeout(notificationTimeout);
-
+                
+                //0.0000000035388715242022003 Silence / Low audio level threshold
+                //0.0000010991421472388613 Normal audio threshold
+                if (sumVentanas < 0.0000001) {
                 // Set new timeout for 30 seconds
                 notificationTimeout = setTimeout(showNotification, 30000);
+                }
 
             } catch (error) {
                 showError(error.message);
