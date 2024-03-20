@@ -97,7 +97,7 @@
                 if (normalised < 100) {
                     // Start the 30-second countdown
                     notificationTimeout = setTimeout(() => {
-                        sendSlackNotification("No audio detected for 30 seconds.");
+                        showNotification();
                     }, 30000);
                 } else {
                     // Reset the notification timeout if audio detected
@@ -109,6 +109,12 @@
             }
         }
 
+        function showNotification() {
+            
+            document.getElementById("notification").style.display = "block";
+            console.log("Condition MET");
+            sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
+        }
 
         async function sendSlackNotification(message) {
             try {
