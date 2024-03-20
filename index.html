@@ -26,8 +26,7 @@
         var BUFF_SIZE = 16384;
         var audioContext;
         var lastDataReceivedTime = Date.now();
-        const slackWebhookUrl = VAR //replacethis
-        let conditionMet = false;
+        const slackWebhookUrl = ""; //replacethis
 
         var notificationTimeout;
 
@@ -86,8 +85,7 @@
                 ventanas.push(average);
 
                 const sumVentanas = ventanas.reduce((acc, val) => acc + val, 0) / (MAX_VENTANAS * BUFF_SIZE);
-                //console.log(sumVentanas);
-                var normalised = sumVentanas*1000000000
+                var normalised = sumVentanas*1000000000;
                 console.log(normalised);
                 document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
 
@@ -96,51 +94,25 @@
                 // Clear previous timeout
                 clearTimeout(notificationTimeout);
 
-                let conditionMet = false;
-
-                // Your condition function
-                function checkCondition() {
-                    // Check your condition here, set conditionMet to true if condition is met
-                    // Example condition: if a variable is greater than 10
-                    if (normalised < 100) {
-                        conditionMet = true;
-                        // Reset the timer if the condition is met
-                        clearTimeout(timeout);
-                        startTimer();
-                    }
-                }
-
-                // Start the timer
-                let timeout = null;
-                function startTimer() {
-                    timeout = setTimeout(() => {
-                        if (!conditionMet) {
-                            // Condition is not met after 30 seconds
-                            // Execute your code here
-                            showNotification();
-                            console.log("Condition not met for 30 seconds.");
-                        }
+                if (normalised < 100) {
+                    // Start the 30-second countdown
+                    notificationTimeout = setTimeout(() => {
+                        sendSlackNotification("No audio detected for 30 seconds.");
                     }, 30000);
+                } else {
+                    // Reset the notification timeout if audio detected
+                    clearTimeout(notificationTimeout);
                 }
-
-
-                const interval = setInterval(checkCondition, 1000);
-                startTimer();
 
             } catch (error) {
                 showError(error.message);
             }
         }
 
-        function showNotification() {
-            console.log("showNotification function called");
-            document.getElementById("notification").style.display = "block";
-            sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
-            let conditionMet = false;
-        }
 
         async function sendSlackNotification(message) {
             try {
+                console.log("sendSlackNotification function called");
                 const response = await fetch(slackWebhookUrl, {
                     method: 'POST',
                     headers: {
