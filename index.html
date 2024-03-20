@@ -97,7 +97,7 @@
                 clearTimeout(notificationTimeout);
 
                 let conditionMet = false;
-                
+
                 // Your condition function
                 function checkCondition() {
                     // Check your condition here, set conditionMet to true if condition is met
@@ -136,6 +136,7 @@
             console.log("showNotification function called");
             document.getElementById("notification").style.display = "block";
             sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
+            let conditionMet = false;
         }
 
         async function sendSlackNotification(message) {
