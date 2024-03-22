@@ -99,20 +99,21 @@
                             if (!flag) {
                                 showNotification();
                                 flag = true;
-                                setTimeout(resetCondition, 15000);
                             }
                         } else {
                             flag = false;
                             document.getElementById("notification").style.display = "none"; 
                         }
-                }
-                
-                function resetCondition() {
-                    flag = false;
-                    checkCondition();
-                }
 
-                checkCondition();
+                    clearTimeout(timeoutId);
+
+                    if (flag) {
+                        timeoutId = setTimeout(() => {
+                            flag = false;
+                            checkCondition();
+                        }, 15000);
+                    }
+                }
 
             } catch (error) {
                 showError(error.message);
