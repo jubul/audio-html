@@ -102,11 +102,10 @@
                             }
                         } else {
                             flag = false;
-                            clearTimeout(timeoutId);
                             document.getElementById("notification").style.display = "none"; 
                         }
                 }
-
+                clearTimeout(timeoutId);
                 timeoutId = setTimeout(checkCondition, 15000);
 
             } catch (error) {
