@@ -99,24 +99,20 @@
                             if (!flag) {
                                 showNotification();
                                 flag = true;
-                                clearTimeout(timeoutId);
-                                timeoutId = setTimeout(resetCondition, 15000)
+                                setTimeout(resetCondition, 15000);
                             }
                         } else {
                             flag = false;
-                            clearTimeout(timeoutId);
-                            timeoutId = setTimeout(checkCondition, 15000);
                             document.getElementById("notification").style.display = "none"; 
                         }
                 }
                 
                 function resetCondition() {
                     flag = false;
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(checkCondition, 15000);
+                    checkCondition();
                 }
 
-                timeoutId = setTimeout(checkCondition, 15000);
+                checkCondition();
 
             } catch (error) {
                 showError(error.message);
