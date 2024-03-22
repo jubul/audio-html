@@ -95,16 +95,17 @@
 
 
                 function checkCondition() {
-                        if (normalised < 100000) {
+                        if (normalised < 100) {
                             if (!flag) {
                                 showNotification();
                                 flag = true;
                             }
                         } else {
                             flag = false;
+                            clearTimeout(timeoutId);
+                            timeoutId = setTimeout(checkCondition, 15000);
+                            document.getElementById("notification").style.display = "none"; 
                         }
-                        clearTimeout(timeoutId);
-                        timeoutId = setTimeout(checkCondition, 15000);   
                 }
 
                 timeoutId = setTimeout(checkCondition, 15000);
