@@ -95,20 +95,16 @@
 
 
                 function checkCondition() {
-                    if (!flag) {
                         if (normalised < 100000) {
-                            showNotification();
-                            let flag = true;
-                            clearTimeout(timeoutId);
-                            timeoutId = setTimeout(checkCondition, 15000);
+                            if (!flag) {
+                                showNotification();
+                                flag = true;
+                            }
                         } else {
-                            clearTimeout(timeoutId);
-                            let flag = false;
-                            timeoutId = setTimeout(checkCondition, 15000);
+                            flag = false;
                         }
-                    } else {
-                        let flag = true;
-                    }
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(checkCondition, 15000);   
                 }
 
                 timeoutId = setTimeout(checkCondition, 15000);
@@ -119,7 +115,7 @@
         }
 
         function showNotification() {
-            let flag = true;
+            flag = true;
             document.getElementById("notification").style.display = "block";
             console.log("Condition MET");
             sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
