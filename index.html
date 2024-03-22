@@ -28,9 +28,7 @@
         var lastDataReceivedTime = Date.now();
         const slackWebhookUrl = ""; //replacethis
         let timeoutId;
-
-
-        let notificationTimeout;
+        let flag = false;
 
         async function startMicrophone() {
             try {
@@ -94,17 +92,22 @@
                 // Update last data received time
                 lastDataReceivedTime = Date.now();
                 // Clear previous timeout
-                clearInterval(notificationInterval);
 
 
                 function checkCondition() {
-                    if (normalised < 100000) {
-                        showNotification();
-                        clearTimeout(timeoutId);
-                        timeoutId = setTimeout(checkCondition, 15000);
+                    if (!flag) {
+                        if (normalised < 100000) {
+                            showNotification();
+                            let flag = true;
+                            clearTimeout(timeoutId);
+                            timeoutId = setTimeout(checkCondition, 15000);
+                        } else {
+                            clearTimeout(timeoutId);
+                            let flag = false;
+                            timeoutId = setTimeout(checkCondition, 15000);
+                        }
                     } else {
-                        clearTimeout(timeoutId);
-                        timeoutId = setTimeout(checkCondition, 15000);
+                        let flag = false;
                     }
                 }
 
