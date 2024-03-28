@@ -93,26 +93,19 @@
                 lastDataReceivedTime = Date.now();
                 // Clear previous timeout
 
+                clearTimeout(timeoutId);
 
                 function checkCondition() {
                         if (normalised < 100) {
-                            if (!flag) {
                                 showNotification();
-                                flag = true;
-                            }
                         } else {
-                            flag = false;
                             document.getElementById("notification").style.display = "none"; 
                         }
 
-                    clearTimeout(timeoutId);
 
-                    if (flag) {
                         timeoutId = setTimeout(() => {
-                            flag = false;
                             checkCondition();
                         }, 15000);
-                    }
                 }
 
             } catch (error) {
@@ -121,9 +114,7 @@
         }
 
         function showNotification() {
-            flag = true;
             document.getElementById("notification").style.display = "block";
-            console.log("Condition MET");
             sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
         }
 
