@@ -93,30 +93,38 @@
                 lastDataReceivedTime = Date.now();
                 // Clear previous timeout
 
-                clearTimeout(timeoutId);
-
-                function checkCondition() {
-                    console.log("check condition")
-                        if (normalised < 100) {
-                            if (!flag) {
-                                showNotification();
-                                flag = true;
-                            }
-                        } else {
-                            flag = false;
-                            document.getElementById("notification").style.display = "none"; 
-                        }
-                }
-
-                if (flag) {
-                        timeoutId = setTimeout(() => {
-                            flag = false;
-                            checkCondition();
-                        }, 15000);
-                    }
+                checkCondition(normalised);
 
             } catch (error) {
                 showError(error.message);
+            }
+        }
+
+
+
+        function checkCondition(normalised) {
+            console.log("check condition")
+            if (normalised < 100) {
+                console.log("if normalised");
+                if (!flag) {
+                    console.log("if flag");
+                    showNotification();
+                    flag = true;
+                }
+            } else {
+                flag = false;
+                document.getElementById("notification").style.display = "none";
+            }
+
+
+        
+            clearTimeout(timeoutId);
+
+            if (flag) {
+                timeoutId = setTimeout(() => {
+                    flag = false;
+                    checkCondition(normalised);
+                }, 30000);
             }
         }
 
