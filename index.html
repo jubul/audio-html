@@ -114,17 +114,7 @@
             } else {
                 flag = false;
                 document.getElementById("notification").style.display = "none";
-            }
-
-
-        
-            clearTimeout(timeoutId);
-
-            if (flag) {
-                timeoutId = setTimeout(() => {
-                    flag = false;
-                    checkCondition(normalised);
-                }, 30000);
+                cclearTimeout(timeoutId);
             }
         }
 
