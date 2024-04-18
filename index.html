@@ -92,9 +92,10 @@
                 // Update last data received time
                 lastDataReceivedTime = Date.now();
                 // Clear previous timeout
-
-                checkCondition(normalised);
-
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    checkCondition(normalised);
+                }, 30000);
             } catch (error) {
                 showError(error.message);
             }
@@ -103,9 +104,7 @@
 
 
         function checkCondition(normalised) {
-            console.log("check condition")
             if (normalised < 100) {
-                console.log("if normalised");
                 if (!flag) {
                     console.log("if flag");
                     showNotification();
@@ -114,7 +113,6 @@
             } else {
                 flag = false;
                 document.getElementById("notification").style.display = "none";
-                cclearTimeout(timeoutId);
             }
         }
 
