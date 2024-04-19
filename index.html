@@ -27,7 +27,8 @@
         var audioContext;
         var lastDataReceivedTime = Date.now();
         const slackWebhookUrl = ""; //replacethis
-        let timeoutId;
+        let intervalId;
+        let startTime;
         let flag = false;
 
         async function startMicrophone() {
@@ -99,9 +100,6 @@
 
 
 
-
-
-
         function conditionMet(normalised) {
             if (normalised < 100) {
                     flag = true;
@@ -113,26 +111,25 @@
 
 
 
-        function callFunctionAfterCondition() {
+    function callFunctionAfterCondition() {
             let startTime = Date.now();
-            let intervalId;
+            intervalId = setInterval(checkCondition, 1000);
+    }
 
-           const checkCondition = () => { 
+           function checkCondition() { 
             if (flag === true) {
-                const elapsedTime = Date.now - startTime;
+                const elapsedTime = Date.now() - startTime;
                 if (elapsedTime >= 30000) {
                     clearInterval(intervalId);
                     showNotification();
                 } 
             } else {
+                console.log("count restarted")
                 startTime = Date.now();
             }
-        };
-        intervalId = setInterval(checkCondition, 1000);
         }
 
         function showNotification() {
-            flag = true;
             document.getElementById("notification").style.display = "block";
             console.log("Condition MET");
             sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
