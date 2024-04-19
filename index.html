@@ -114,22 +114,20 @@
 
 
     function callFunctionAfterCondition() {
-            let startTime = Date.now();
             intervalId = setInterval(checkCondition, 1000);
     }
 
            function checkCondition() { 
             if (flag === true) {
-                const elapsedTime = Date.now() - startTime;
-                if (elapsedTime >= 30000 && !notificationShown) {
+                if (!notificationShown) {
                     clearInterval(intervalId);
                     showNotification();
                     notificationShown = true;
                 } 
             } else {
-                console.log("count restarted")
-                clearInterval(intervalId); // Clear the interval if condition is no longer met
-                callFunctionAfterCondition()
+                clearInterval(intervalId);
+                console.log("count restarted");
+                callFunctionAfterCondition();
             }
         }
 
