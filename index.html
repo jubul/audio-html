@@ -30,6 +30,7 @@
         let intervalId;
         let startTime;
         let flag = false;
+        let notificationShown = false;
 
         async function startMicrophone() {
             try {
@@ -106,6 +107,7 @@
             } else {
                 flag = false;
                 document.getElementById("notification").style.display = "none";
+                notificationShown = false;
             }
         }
 
@@ -122,10 +124,12 @@
                 if (elapsedTime >= 30000) {
                     clearInterval(intervalId);
                     showNotification();
+                    notificationShown = true;
                 } 
             } else {
                 console.log("count restarted")
                 startTime = Date.now();
+                //notificationShown = false;
             }
         }
 
