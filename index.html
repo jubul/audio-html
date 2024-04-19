@@ -28,7 +28,7 @@
         var lastDataReceivedTime = Date.now();
         const slackWebhookUrl = ""; //replacethis
         let intervalId;
-        let startTime;
+        let countdownStartTime;
         let flag = false;
         let notificationShown = false;
 
@@ -102,12 +102,18 @@
 
 
         function conditionMet(normalised) {
-            if (normalised < 1000) {
+            if (normalised < 100) {
                     flag = true;
+                    if (!countdownStartTime) {
+                        countdownStartTime = Date.now();
+                    }
             } else {
                 flag = false;
-                document.getElementById("notification").style.display = "none";
-                notificationShown = false;
+                countdownStartTime = null;
+                if (notificationShown) {
+                    document.getElementById("notification").style.display = "none";
+                    notificationShown = false;
+                }
             }
         }
 
@@ -117,17 +123,17 @@
             intervalId = setInterval(checkCondition, 1000);
     }
 
-           function checkCondition() { 
+        function checkCondition() { 
             if (flag === true) {
-                if (!notificationShown) {
+                const elapsedTime = Date.now() - countdownStartTime;
+                if (elapsedTime >= 30000 && !notificationShown) {
                     clearInterval(intervalId);
                     showNotification();
-                    notificationShown = true;
                 } 
             } else {
                 clearInterval(intervalId);
                 console.log("count restarted");
-                callFunctionAfterCondition();
+                countdownStartTime = null;
             }
         }
 
@@ -135,6 +141,7 @@
             document.getElementById("notification").style.display = "block";
             console.log("Condition MET");
             sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
+            notificationShown = true;
         }
 
         async function sendSlackNotification(message) {
