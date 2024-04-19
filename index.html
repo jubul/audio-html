@@ -89,13 +89,9 @@
                 console.log(normalised);
                 document.getElementById("barra-progreso2").style.width = Math.floor(sumVentanas * 1000000) + "%";
 
-                // Update last data received time
-                lastDataReceivedTime = Date.now();
-                // Clear previous timeout
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => {
-                    checkCondition(normalised);
-                }, 30000);
+                conditionMet(normalised);
+                callFunctionAfterCondition();
+
             } catch (error) {
                 showError(error.message);
             }
@@ -103,17 +99,36 @@
 
 
 
-        function checkCondition(normalised) {
+
+
+
+        function conditionMet(normalised) {
             if (normalised < 100) {
-                if (!flag) {
-                    console.log("if flag");
-                    showNotification();
                     flag = true;
-                }
             } else {
                 flag = false;
                 document.getElementById("notification").style.display = "none";
             }
+        }
+
+
+
+        function callFunctionAfterCondition() {
+            let startTime = Date.now();
+            let intervalId;
+
+           const checkCondition = () => { 
+            if (flag === true) {
+                const elapsedTime = Date.now - startTime;
+                if (elapsedTime >= 30000) {
+                    clearInterval(intervalId);
+                    showNotification();
+                } 
+            } else {
+                startTime = Date.now();
+            }
+        };
+        intervalId = setInterval(checkCondition, 1000);
         }
 
         function showNotification() {
