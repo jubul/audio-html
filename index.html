@@ -102,7 +102,7 @@
 
 
         function conditionMet(normalised) {
-            if (normalised < 100) {
+            if (normalised < 1000) {
                     flag = true;
             } else {
                 flag = false;
@@ -121,15 +121,15 @@
            function checkCondition() { 
             if (flag === true) {
                 const elapsedTime = Date.now() - startTime;
-                if (elapsedTime >= 30000) {
+                if (elapsedTime >= 30000 && !notificationShown) {
                     clearInterval(intervalId);
                     showNotification();
                     notificationShown = true;
                 } 
             } else {
                 console.log("count restarted")
-                startTime = Date.now();
-                //notificationShown = false;
+                clearInterval(intervalId); // Clear the interval if condition is no longer met
+                callFunctionAfterCondition()
             }
         }
 
