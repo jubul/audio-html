@@ -132,14 +132,14 @@
                 } 
             } else {
                 clearInterval(intervalId);
-                console.log("count restarted");
+                //console.log("count restarted");
                 countdownStartTime = null;
             }
         }
 
         function showNotification() {
             document.getElementById("notification").style.display = "block";
-            console.log("Condition MET");
+            //console.log("Condition MET");
             sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
             notificationShown = true;
         }
