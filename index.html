@@ -126,7 +126,7 @@
         function checkCondition() { 
             if (flag === true) {
                 const elapsedTime = Date.now() - countdownStartTime;
-                if (elapsedTime >= 30000 && !notificationShown) {
+                if (elapsedTime >= 60000 && !notificationShown) {
                     clearInterval(intervalId);
                     showNotification();
                 } 
@@ -140,7 +140,7 @@
         function showNotification() {
             document.getElementById("notification").style.display = "block";
             //console.log("Condition MET");
-            sendSlackNotification("No recibi audio en los ultimos 30 segundos.");
+            sendSlackNotification("No recibi audio en los ultimos 60 segundos.");
             notificationShown = true;
         }
 
